@@ -229,6 +229,7 @@ void main()
 		new Teacher("Diaz", "Ricardo", 50, "Weapons distribution", 20)
 	};
 
+	cout << sizeof(group) / sizeof(group[0]) << endl;
 	for (int i = 0; i < sizeof(group) / sizeof(group[0]); i++)
 	{
 		group[i]->info();
