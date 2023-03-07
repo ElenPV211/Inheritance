@@ -233,6 +233,6 @@ void main()
 	for (int i = 0; i < sizeof(group) / sizeof(group[0]); i++)
 	{
 		group[i]->info();
-		cout << "\n---------------------------------\n";
+		cout << "\n-----------------------------------\n";
 	}
 }
