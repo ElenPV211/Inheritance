@@ -5,11 +5,15 @@ using namespace std;
 //#define WRITE_TO_FILE
 #define READ_FROM_FILE
 
-const char unit[] = {"B", "kB","MB", "GB"}
+const char UNITS[] = { "B", "kB","MB", "GB" };
 
 void main()
 {
 	setlocale(0, "");
+	setlocale(LC_ALL, "");
+	cout << "Hello World";
+	cout << endl;
+	//https://legacy.cplusplus.com/doc/tutorial/files/
 #ifdef WRITE_TO_FILE
     ofstream fout; //1) Создаём поток
 	fout.open("File.txt", std::ios_base::app); //2) Открываем поток
@@ -27,7 +31,7 @@ void main()
 	int filesize = fin.tellg();
 	cout << "Конечная позиция курсора: " << filesize << endl;
 	for (; filesize > 1024; i++, filesize /= 1024);
-	cout << "Размер файла: " << filesize << " " << UNITI << endl;
+	cout << "Размер файла: " << filesize << " " << UNITS[i] << endl;
 	//fin.tellg() - tell get position (говорит позицию считывающего курсора)
 	//по умолчанию, разделителем для fin.getline() является '\n'
 	
@@ -40,7 +44,8 @@ void main()
 		while (!fin.eof())
 		{
 			//fin >> sz_buffer;
-			fin.getline(sz_buffer, SIZE);
+			fin.getline(sz_buffer, SIZE);//getline() позволяет ввести строку с пробелами, до заданного разделителя
+			//по умолчанию, разделителем для fin.getline() является '\n'
 			cout << sz_buffer << endl;
 
 		}
