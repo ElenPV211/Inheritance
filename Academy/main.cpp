@@ -51,6 +51,11 @@ public:
 		cout << last_name << " " << first_name << " " << age << endl;
 	}
 };
+std::ostream& operator<<(std::ostream& os, const Human& obj)
+{
+	return os << obj.get_last_name() << " " << obj.get_first_name() << " " << obj.get_age();
+}
+
 #define STUDENT_TAKE_PARAMETERS const std::string& speciality, const std::string& group, double rating, double attendance
 #define STUDENT_GIVE_PARAMETERS speciality, group, rating, attendance
 //---------------------------------------------------
@@ -114,7 +119,10 @@ public:
 		cout << speciality << " " << group << " " << rating << " " << attendance << endl;
 	}
 };
-
+std::ostream& operator<<(std::ostream& os, const Student& obj)
+{
+	return os << (Human&)obj << " " << obj.get_speciality() << " " << obj.get_group() << " " << obj.get_rating() << " " << obj.get_attendance();
+}
 
 //-----------------------------------------------------------
 
@@ -162,8 +170,14 @@ public:
 		Human::info();
 		cout << speciality << " " << experience << " лет.\n";
 	}
-
 };
+
+
+std::ostream& operator<<(std::ostream& os, const Teacher& obj)
+{
+	return os << (Human&)obj << " " << obj.get_speciality() << " " << obj.get_experience();
+}
+
 //--------------------------------------------------------
 
 #define GRADUATE_TAKE_PARAMETRS const std::string& subject
@@ -198,6 +212,11 @@ public:
 		cout << subject << endl;
 	}
 };
+std::ostream& operator<<(std::ostream& os, const Graduate& obj)
+{
+	return os << (Student&)obj << " " << obj.get_subject();
+}
+
 
 //#define INHERITANCE_CHECK
 
@@ -219,6 +238,8 @@ void main()
 	Graduate graduate("Петров", "Николай", 21, "IT", "PV_211", 10, 80, "Организация безопасности");
 	graduate.info();
 #endif //INHERITANCE_CHECK
+
+
 	//-----------Generalisation (UpCast)---
 	Human* group[] =
 	{
@@ -230,16 +251,23 @@ void main()
 	};
 
 	cout << sizeof(group) / sizeof(group[0]) << endl;
+	
 	for (int i = 0; i < sizeof(group) / sizeof(group[0]); i++)
 	{
-		cout << typeid(*group[i]).name() << endl;
-		group[i]->info();
+		cout << typeid(*group[i]).name() << endl;//typeid - оператор позволяет проверить тип переменной
+		//group[i]->info();
+
+		//dinamic-cast-убедиться, что результат преобразования типов указывает на валидный завершённый объект
+
+		if (typeid(*group[i]) == typeid(Student))cout << *dynamic_cast<Student*>(group[i]) << endl;
+		if (typeid(*group[i]) == typeid(Graduate))cout << *dynamic_cast<Graduate*>(group[i]) << endl;
+		if (typeid(*group[i]) == typeid(Teacher))cout << *dynamic_cast<Teacher*>(group[i]) << endl;
 		cout << "\n-----------------------------------\n";
 	}
-	for (int i = 0; i < sizeof(group) / sizeof(Human*); i++)
+	for (int i = 0; i < sizeof(group) / sizeof(Human*); i++)//обращение к деструктору
 	{
-		delete group[i];
+		delete group[i]; //если delete[] group[i] то удаляется весь массив, а так удаляется элементы 
 	}
-	//delete[ group; //При удалении статической памяти вылетает
-	//Debug Asse
+	//delete[] group; //При удалении статической памяти вылетает
+	//Debug Assertion Failed
 }
