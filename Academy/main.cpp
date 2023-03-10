@@ -1,8 +1,8 @@
-#include<iostream>
+п»ї#include<iostream>
 using namespace std;
-//список принимаемых параметров HUMAN
+//СЃРїРёСЃРѕРє РїСЂРёРЅРёРјР°РµРјС‹С… РїР°СЂР°РјРµС‚СЂРѕРІ HUMAN
 #define HUMAN_TAKE_PARAMETERS const std::string& last_name, const std::string& first_name, int age
-//список передаваемых параметров HUMAN
+//СЃРїРёСЃРѕРє РїРµСЂРµРґР°РІР°РµРјС‹С… РїР°СЂР°РјРµС‚СЂРѕРІ HUMAN
 #define HUMAN_GIVE_PARAMETERS last_name, first_name, age
 class Human
 {
@@ -119,7 +119,7 @@ public:
 	//-----------------Metods:--------------------------//
 	void info()const
 	{
-		Human::info(); // ссылаемся на родительский класс
+		Human::info(); // СЃСЃС‹Р»Р°РµРјСЃСЏ РЅР° СЂРѕРґРёС‚РµР»СЊСЃРєРёР№ РєР»Р°СЃСЃ
 		cout << speciality << " " << group << " " << rating << " " << attendance << endl;
 	}
 	std::ostream& print(std::ostream& os)const override
@@ -176,7 +176,7 @@ public:
 	void info()const
 	{
 		Human::info();
-		cout << speciality << " " << experience << " лет.\n";
+		cout << speciality << " " << experience << " Р»РµС‚.\n";
 	}
 	std::ostream& print(std::ostream& os) const override
 	{
@@ -242,16 +242,16 @@ void main()
 {
 	setlocale(LC_ALL, "");
 #ifdef INHERITANCE_CHECK
-	Human human("Тупенко", "Василий", 20);
+	Human human("РўСѓРїРµРЅРєРѕ", "Р’Р°СЃРёР»РёР№", 20);
 	human.info();
 
-	Student student("Иванов", "Иван", 18, "IT", "PV211", 12, 100);
+	Student student("РРІР°РЅРѕРІ", "РРІР°РЅ", 18, "IT", "PV211", 12, 100);
 	student.info();
 
 	Teacher teacher("Einstein", "Albert", 143, "Astronomiy", 110);
 	teacher.info();
 
-	Graduate graduate("Петров", "Николай", 21, "IT", "PV_211", 10, 80, "Организация безопасности");
+	Graduate graduate("РџРµС‚СЂРѕРІ", "РќРёРєРѕР»Р°Р№", 21, "IT", "PV_211", 10, 80, "РћСЂРіР°РЅРёР·Р°С†РёСЏ Р±РµР·РѕРїР°СЃРЅРѕСЃС‚Рё");
 	graduate.info();
 #endif //INHERITANCE_CHECK
 
@@ -270,20 +270,20 @@ void main()
 	
 	for (int i = 0; i < sizeof(group) / sizeof(group[0]); i++)
 	{
-		cout << typeid(*group[i]).name() << endl;//typeid - оператор позволяет проверить тип переменной
+		cout << typeid(*group[i]).name() << endl;//typeid - РѕРїРµСЂР°С‚РѕСЂ РїРѕР·РІРѕР»СЏРµС‚ РїСЂРѕРІРµСЂРёС‚СЊ С‚РёРї РїРµСЂРµРјРµРЅРЅРѕР№
 		//group[i]->info();
 
-		//dinamic-cast-убедиться, что результат преобразования типов указывает на валидный завершённый объект
+		//dinamic-cast-СѓР±РµРґРёС‚СЊСЃСЏ, С‡С‚Рѕ СЂРµР·СѓР»СЊС‚Р°С‚ РїСЂРµРѕР±СЂР°Р·РѕРІР°РЅРёСЏ С‚РёРїРѕРІ СѓРєР°Р·С‹РІР°РµС‚ РЅР° РІР°Р»РёРґРЅС‹Р№ Р·Р°РІРµСЂС€С‘РЅРЅС‹Р№ РѕР±СЉРµРєС‚
 
 		if (typeid(*group[i]) == typeid(Student))cout << *dynamic_cast<Student*>(group[i]) << endl;
 		if (typeid(*group[i]) == typeid(Graduate))cout << *dynamic_cast<Graduate*>(group[i]) << endl;
 		if (typeid(*group[i]) == typeid(Teacher))cout << *dynamic_cast<Teacher*>(group[i]) << endl;
 		cout << "\n-----------------------------------\n";
 	}
-	for (int i = 0; i < sizeof(group) / sizeof(Human*); i++)//обращение к деструктору
+	for (int i = 0; i < sizeof(group) / sizeof(Human*); i++)//РѕР±СЂР°С‰РµРЅРёРµ Рє РґРµСЃС‚СЂСѓРєС‚РѕСЂСѓ
 	{
-		delete group[i]; //если delete[] group[i] то удаляется весь массив, а так удаляется элементы 
+		delete group[i]; //РµСЃР»Рё delete[] group[i] С‚Рѕ СѓРґР°Р»СЏРµС‚СЃСЏ РІРµСЃСЊ РјР°СЃСЃРёРІ, Р° С‚Р°Рє СѓРґР°Р»СЏРµС‚СЃСЏ СЌР»РµРјРµРЅС‚С‹ 
 	}
-	//delete[] group; //При удалении статической памяти вылетает
+	//delete[] group; //РџСЂРё СѓРґР°Р»РµРЅРёРё СЃС‚Р°С‚РёС‡РµСЃРєРѕР№ РїР°РјСЏС‚Рё РІС‹Р»РµС‚Р°РµС‚
 	//Debug Assertion Failed
 }
