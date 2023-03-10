@@ -5,7 +5,7 @@ using namespace std;
 //#define WRITE_TO_FILE
 #define READ_FROM_FILE
 
-const char UNITS[] = { "B", "kB","MB", "GB" };
+const char* UNITS[] = { "B", "kB","MB", "GB" };
 
 void main()
 {
