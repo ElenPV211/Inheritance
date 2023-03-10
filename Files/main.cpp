@@ -16,7 +16,7 @@ void main()
 	//https://legacy.cplusplus.com/doc/tutorial/files/
 #ifdef WRITE_TO_FILE
 
-	name_file[256];
+	/*name_file[256];
 	cout << "Введите имя файла: \n";
 	cin >> name_file;
 
