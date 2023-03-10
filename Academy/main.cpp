@@ -50,10 +50,14 @@ public:
 	{
 		cout << last_name << " " << first_name << " " << age << endl;
 	}
+	virtual std::ostream& print(std::ostream& os)const
+	{
+		return os << last_name << " " << first_name << age;
+	}
 };
 std::ostream& operator<<(std::ostream& os, const Human& obj)
 {
-	return os << obj.get_last_name() << " " << obj.get_first_name() << " " << obj.get_age();
+	return obj.print(os);
 }
 
 #define STUDENT_TAKE_PARAMETERS const std::string& speciality, const std::string& group, double rating, double attendance
@@ -118,11 +122,15 @@ public:
 		Human::info(); // ссылаемся на родительский класс
 		cout << speciality << " " << group << " " << rating << " " << attendance << endl;
 	}
+	std::ostream& print(std::ostream& os)const override
+	{
+		return Human::print(os) << " " << speciality << " " << group << " " << rating << " " << attendance;
+	}
 };
-std::ostream& operator<<(std::ostream& os, const Student& obj)
+/*std::ostream& operator<<(std::ostream& os, const Student& obj)
 {
 	return os << (Human&)obj << " " << obj.get_speciality() << " " << obj.get_group() << " " << obj.get_rating() << " " << obj.get_attendance();
-}
+}*/
 
 //-----------------------------------------------------------
 
@@ -170,13 +178,17 @@ public:
 		Human::info();
 		cout << speciality << " " << experience << " лет.\n";
 	}
+	std::ostream& print(std::ostream& os) const override
+	{
+		return Human::print(os) << " " << speciality << " " << experience;
+	}
 };
 
 
-std::ostream& operator<<(std::ostream& os, const Teacher& obj)
+/*std::ostream& operator<<(std::ostream& os, const Teacher& obj)
 {
 	return os << (Human&)obj << " " << obj.get_speciality() << " " << obj.get_experience();
-}
+}*/
 
 //--------------------------------------------------------
 
@@ -211,11 +223,15 @@ public:
 		Student::info();
 		cout << subject << endl;
 	}
+	std::ostream& print(std::ostream& os)const override
+	{
+		return Student::print(os) << subject;
+	}
 };
-std::ostream& operator<<(std::ostream& os, const Graduate& obj)
+/*std::ostream& operator<<(std::ostream& os, const Graduate& obj)
 {
 	return os << (Student&)obj << " " << obj.get_subject();
-}
+}*/
 
 
 //#define INHERITANCE_CHECK
