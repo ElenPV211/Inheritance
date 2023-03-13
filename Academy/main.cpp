@@ -1,9 +1,21 @@
 ﻿#include<iostream>
+#include<string>
+#include<fstream>
 using namespace std;
 //список принимаемых параметров HUMAN
 #define HUMAN_TAKE_PARAMETERS const std::string& last_name, const std::string& first_name, int age
 //список передаваемых параметров HUMAN
 #define HUMAN_GIVE_PARAMETERS last_name, first_name, age
+
+enum allignment
+{
+	last_name_width = 15,
+	first_name_width = 10,
+	age_width = 5,
+	speciality_width = 25,
+	numeric_width = 8
+};
+
 class Human
 {
 	std::string last_name;
@@ -52,13 +64,41 @@ public:
 	}
 	virtual std::ostream& print(std::ostream& os)const
 	{
-		return os << last_name << " " << first_name << age;
+		return os << last_name << " " << first_name << " " << age;
 	}
+	virtual std::ofstream& print(std::ofstream& ofs)const
+	{
+		ofs.width(allignment::last_name_width);
+		ofs << left;
+		ofs << last_name;
+		ofs.width(allignment::first_name_width);
+		ofs << first_name;
+		ofs.width(allignment::age_width);
+		ofs << age;
+		return ofs;
+	}
+	virtual std::ifstream& scan(std::ifstream& ifs)
+	{
+		ifs >> last_name >> first_name >> age;
+		return ifs;
+	}
+
 };
+
 std::ostream& operator<<(std::ostream& os, const Human& obj)
 {
 	return obj.print(os);
 }
+std::ofstream& operator<<(std::ofstream& ofs, const Human& obj)
+{
+	return obj.print(ofs);
+}
+
+std::ifstream& operator>>(std::ifstream& ifs, Human& obj)
+{
+	return obj.scan(ifs);
+}
+
 
 #define STUDENT_TAKE_PARAMETERS const std::string& speciality, const std::string& group, double rating, double attendance
 #define STUDENT_GIVE_PARAMETERS speciality, group, rating, attendance
@@ -69,7 +109,9 @@ class Student :public Human
 	std::string group;
 	double rating;
 	double attendance;
+
 public:
+
 	const std::string& get_speciality()const
 	{
 		return speciality;
@@ -86,11 +128,11 @@ public:
 	{
 		return attendance;
 	}
-	void set_speciality(const std::string & speciality)
+	void set_speciality(const std::string& speciality)
 	{
 		this->speciality = speciality;
 	}
-	void set_group(const std::string & group)
+	void set_group(const std::string& group)
 	{
 		this->group = group;
 	}
@@ -103,8 +145,7 @@ public:
 		this->attendance = attendance;
 	}
 	//---------------Constructors:---------------///
-	Student(HUMAN_TAKE_PARAMETERS, STUDENT_TAKE_PARAMETERS)
-		:Human(HUMAN_GIVE_PARAMETERS)
+	Student(HUMAN_TAKE_PARAMETERS, STUDENT_TAKE_PARAMETERS) :Human(HUMAN_GIVE_PARAMETERS)
 	{
 		set_speciality(speciality);
 		set_group(group);
@@ -116,21 +157,54 @@ public:
 	{
 		cout << "SDestructor:\t" << this << endl;
 	}
+
 	//-----------------Metods:--------------------------//
 	void info()const
 	{
 		Human::info(); // ссылаемся на родительский класс
 		cout << speciality << " " << group << " " << rating << " " << attendance << endl;
 	}
+
 	std::ostream& print(std::ostream& os)const override
 	{
 		return Human::print(os) << " " << speciality << " " << group << " " << rating << " " << attendance;
 	}
+	std::ofstream& print(std::ofstream& ofs)const override
+	{
+		Human::print(ofs);
+		ofs.width(allignment::speciality_width);
+		ofs << left;
+		ofs << speciality;
+		ofs.width(allignment::numeric_width);
+		ofs << group;
+		ofs.width(allignment::numeric_width);
+		ofs << rating;
+		ofs.width(allignment::numeric_width);
+		ofs << attendance;
+		return ofs;
+	}
+	std::ifstream& scan(std::ifstream& ifs)override
+	{
+		Human::scan(ifs);
+		char sz_buffer[allignment::speciality_width] = {};
+		ifs.read(sz_buffer, allignment::speciality_width - 1);	//ìåòîä read() ÷èòàåò çàäàííîå êîëè÷åñòâî Áàéò èç ôàéëà
+		for (int i = allignment::speciality_width - 2; sz_buffer[i] == ' '; i--)
+			sz_buffer[i] = 0;
+		while (sz_buffer[0] == ' ')
+			for (int i = 0; sz_buffer[i]; i++)sz_buffer[i] = sz_buffer[i + 1];
+		speciality = sz_buffer;
+		ifs >> group;
+		ifs >> rating;
+		ifs >> attendance;
+		return ifs;
+	}
+
 };
 /*std::ostream& operator<<(std::ostream& os, const Student& obj)
 {
 	return os << (Human&)obj << " " << obj.get_speciality() << " " << obj.get_group() << " " << obj.get_rating() << " " << obj.get_attendance();
 }*/
+
 
 //-----------------------------------------------------------
 
@@ -160,8 +234,7 @@ public:
 
 	//----------Constractors:----------------------//
 
-	Teacher(HUMAN_TAKE_PARAMETERS, TEACHER_TAKE_PARAMETERS)
-		:Human(HUMAN_GIVE_PARAMETERS)
+	Teacher(HUMAN_TAKE_PARAMETERS, TEACHER_TAKE_PARAMETERS)	:Human(HUMAN_GIVE_PARAMETERS)
 	{
 		set_speciality(speciality);
 		set_experience(experience);
@@ -178,18 +251,38 @@ public:
 		Human::info();
 		cout << speciality << " " << experience << " лет.\n";
 	}
-	std::ostream& print(std::ostream& os) const override
+	std::ostream& print(std::ostream& os)const override
 	{
 		return Human::print(os) << " " << speciality << " " << experience;
 	}
-};
+	std::ofstream& print(std::ofstream& ofs)const override
+	{
+		Human::print(ofs);
+		ofs.width(allignment::speciality_width);
+		ofs << speciality;
+		ofs.width(allignment::numeric_width);
+		ofs << experience;
+		return ofs;
+	}
+	std::ifstream& scan(std::ifstream& ifs)override
+	{
+		Human::scan(ifs);
+		char sz_buffer[allignment::speciality_width] = {};
+		ifs.read(sz_buffer, allignment::speciality_width - 1);
+		for (int i = allignment::speciality_width - 2; sz_buffer[i] == ' '; i--)sz_buffer[i] = 0;
+		while (sz_buffer[0] == ' ')
+			for (int i = 0; sz_buffer[i]; i++)sz_buffer[i] = sz_buffer[i + 1];
+		speciality = sz_buffer;
+		ifs >> experience;
+		return ifs;
+	}
 
+};
 
 /*std::ostream& operator<<(std::ostream& os, const Teacher& obj)
 {
 	return os << (Human&)obj << " " << obj.get_speciality() << " " << obj.get_experience();
 }*/
-
 //--------------------------------------------------------
 
 #define GRADUATE_TAKE_PARAMETRS const std::string& subject
@@ -225,17 +318,108 @@ public:
 	}
 	std::ostream& print(std::ostream& os)const override
 	{
-		return Student::print(os) << subject;
+		return Student::print(os) << " " << subject;
 	}
+	std::ofstream& print(std::ofstream& ofs)const override
+	{
+		Student::print(ofs);
+		ofs << subject;
+		return ofs;
+	}
+	std::ifstream& scan(std::ifstream& ifs)
+	{
+		Student::scan(ifs);
+		std::getline(ifs, subject);
+		return ifs;
+	}
+
 };
 /*std::ostream& operator<<(std::ostream& os, const Graduate& obj)
 {
 	return os << (Student&)obj << " " << obj.get_subject();
 }*/
 
+Human* HumanFactory(const std::string& type)
+{
+	if (type.find("Student") != std::string::npos)return new Student("", "", 0, "", "", 0, 0);
+	if (type.find("Graduate") != std::string::npos)return new Graduate("", "", 0, "", "", 0, 0, "");
+	if (type.find("Teacher") != std::string::npos)return new Teacher("", "", 0, "", 0);
+}
+
+
+
+
+void save(Human** group, const int n, const char* filename)
+// функция принимающая ссылка на ссылку группы, размер этой группы и имя файла
+
+{
+	std::ofstream fout(filename);      //создаём файл, если так std::ofstream& fout(filename);
+	//то ошибка т.к. пытаемся создать ссылку, надо без &
+
+	for (int i = 0; i < n; i++) // выполняем запись в цикле
+	{
+		fout << typeid(*group[i]).name() << ":\t";//tipeid для того, чтобы мы могли различать участников группы,
+        // понимать объект какого класса нужно нам создать когда мы будем загружать.
+		fout << *group[i] << endl;  // *group[i] каждый участник группы будет занимать отдельную строку
+	}
+	fout.close();
+	std::string s_command = "start notepad "; //запустить блокнот
+	s_command += filename;
+	system(s_command.c_str());//s_command является объектом класса std striam
+	//system не знает, что такое string и чтобы из него достать обычную raw
+	//строку есть метод c_str()
+}
+
+Human** load(const char* filename, int& n)
+{
+	Human** group = nullptr;	//Åñëè ôàéë íåáûë íàéäåí, òî ãðóïïà íå ñîçäàíà
+	n = 0;
+
+	std::ifstream fin(filename);
+	if (fin.is_open())
+	{
+		//1) Îïðåäåëÿåì êîëè÷åñòâî ñòðîê â ôàéëå:
+		while (!fin.eof())
+		{
+			std::string buffer;
+			std::getline(fin, buffer);
+			if (buffer.empty())continue;
+			n++;
+		}
+
+		//2) Âûäåëÿåì ïàìÿòü ïîä îáúåêòû. Êàæäûé îáúåêò çàíèìàåò îòäåëüíóþ ñòðîêó â ôàéëå.
+		group = new Human * [n] {};
+
+		//3) Âîçâðàùàåìñÿ â íà÷àëî ôàéëà, äëÿ òîãî ÷òîáû ïðî÷èòàòü åãî åùå ðàç:
+		cout << "Ïîçèöèÿ êóðñîðà â ôàéëå: " << fin.tellg() << endl;
+		fin.clear();
+		fin.seekg(0);	//seekg() çàäàåò get-ïîçèöèþ êóðñîðà (get - âçÿòü, ïðî÷èòàòü)
+		cout << "Ïîçèöèÿ êóðñîðà â ôàéëå: " << fin.tellg() << endl;
+
+		//4) Âûïîëíÿåì ïîâòîðíîå ÷òåíèå:
+		std::string obj_type;
+		for (int i = 0; i < n; i++)
+		{
+			std::getline(fin, obj_type, ':');
+			fin.ignore();
+			if (obj_type.empty())continue;
+			group[i] = HumanFactory(obj_type);
+			fin >> *group[i];
+		}
+
+		fin.close();
+	}
+	else
+	{
+		std::cerr << "Error: file not found" << endl;
+	}
+
+	return group;
+}
 
 //#define INHERITANCE_CHECK
-
+#define POLIMORFISM //(многоформенность)
+//#define READ_FROM_FILE
 
 
 void main()
@@ -255,7 +439,7 @@ void main()
 	graduate.info();
 #endif //INHERITANCE_CHECK
 
-
+#ifdef POLYMORPHISM
 	//-----------Generalisation (UpCast)---
 	Human* group[] =
 	{
@@ -267,23 +451,44 @@ void main()
 	};
 
 	cout << sizeof(group) / sizeof(group[0]) << endl;
-	
+
 	for (int i = 0; i < sizeof(group) / sizeof(group[0]); i++)
 	{
-		cout << typeid(*group[i]).name() << endl;//typeid - оператор позволяет проверить тип переменной
+		//typeid - оператор позволяет проверить тип переменной
+		cout << typeid(*group[i]).name() << endl;
 		//group[i]->info();
-
-		//dinamic-cast-убедиться, что результат преобразования типов указывает на валидный завершённый объект
-
-		if (typeid(*group[i]) == typeid(Student))cout << *dynamic_cast<Student*>(group[i]) << endl;
+			//dinamic-cast-убедиться, что результат преобразования типов указывает на валидный завершённый объект
+		/*if (typeid(*group[i]) == typeid(Student))cout << *dynamic_cast<Student*>(group[i]) << endl;
 		if (typeid(*group[i]) == typeid(Graduate))cout << *dynamic_cast<Graduate*>(group[i]) << endl;
 		if (typeid(*group[i]) == typeid(Teacher))cout << *dynamic_cast<Teacher*>(group[i]) << endl;
-		cout << "\n-----------------------------------\n";
+*/
+		cout << *group[i] << endl;
+		cout << "\n---------------------------------\n";
 	}
-	for (int i = 0; i < sizeof(group) / sizeof(Human*); i++)//обращение к деструктору
+	save(group, sizeof(group) / sizeof(group[0]), "group.txt");
+
+	for (int i = 0; i < sizeof(group) / sizeof(Human*); i++) //обращение к деструктору
 	{
 		delete group[i]; //если delete[] group[i] то удаляется весь массив, а так удаляется элементы 
 	}
-	//delete[] group; //При удалении статической памяти вылетает
-	//Debug Assertion Failed
+#endif // POLYMORPHISM
+
+#ifdef READ_FROM_FILE
+	int n = 0;	//Ðàçìåð ãðóïïû. Áóäåò âû÷èñëåí ôóíêöèåé load()
+	Human** group = load("group.txt", n);
+	cout << "\n-----------------------------------------\n";
+	for (int i = 0; i < n; i++)
+	{
+		cout << *group[i] << endl;
+		cout << "\n-----------------------------------------\n";
+	}
+	for (int i = 0; i < n; i++)
+	{
+		delete group[i];
+	}
+	delete[] group;
+#endif // READ_FROM_FILE
+
 }
+
+
