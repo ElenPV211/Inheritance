@@ -12,8 +12,8 @@ enum allignment
 	last_name_width = 15,
 	first_name_width = 10,
 	age_width = 5,
-	speciality_width = 25,
-	numeric_width = 8
+	speciality_width = 25,  
+	numeric_width = 8         //длина номеров
 };
 
 class Human
@@ -69,7 +69,12 @@ public:
 	virtual std::ofstream& print(std::ofstream& ofs)const
 	{
 		ofs.width(allignment::last_name_width);
-		ofs << left;
+		//ширина столбца под в последующем выводимые символы сначала 
+		//было ofs.width(20)- количество закладываемых под фамилию символов
+		//в последующем использовали перечисление enum именуем его allignment-выравнивание
+		//и оттуда вытаскиваем через :: длины элементов
+		ofs << left;//выравнивание по левому краю
+		//можно было ofs << last_name + " " + first_name;-работает так
 		ofs << last_name;
 		ofs.width(allignment::first_name_width);
 		ofs << first_name;
@@ -171,9 +176,9 @@ public:
 	}
 	std::ofstream& print(std::ofstream& ofs)const override
 	{
-		Human::print(ofs);
+		Human::print(ofs);//вызываем для базового класса
 		ofs.width(allignment::speciality_width);
-		ofs << left;
+		ofs << left; // пояснения в родительском классе
 		ofs << speciality;
 		ofs.width(allignment::numeric_width);
 		ofs << group;
@@ -339,14 +344,16 @@ public:
 	return os << (Student&)obj << " " << obj.get_subject();
 }*/
 
-Human* HumanFactory(const std::string& type)
+Human* HumanFactory(const std::string& type) //вспомогательная функция
 {
+	//используем метод find - возвращает первую позицию символа первого совпадения
+	//  если то что он вернул не равно npos тогда мы возвращаем на место вызова объект по умолчанию
+	//и подготавливаем место для загрузки строки про Student и т.д.
+	//если у нас тип студент то создаём новго студента и возвращаем его на место вызова
 	if (type.find("Student") != std::string::npos)return new Student("", "", 0, "", "", 0, 0);
 	if (type.find("Graduate") != std::string::npos)return new Graduate("", "", 0, "", "", 0, 0, "");
 	if (type.find("Teacher") != std::string::npos)return new Teacher("", "", 0, "", 0);
 }
-
-
 
 
 void save(Human** group, const int n, const char* filename)
@@ -370,51 +377,59 @@ void save(Human** group, const int n, const char* filename)
 	//строку есть метод c_str()
 }
 
-Human** load(const char* filename, int& n)
+Human** load(const char* filename, int& n) // возвращает массив объектов класса Human
+//принимает имя файла и размер возвращаемого массива массива
 {
-	Human** group = nullptr;	//Åñëè ôàéë íåáûë íàéäåí, òî ãðóïïà íå ñîçäàíà
-	n = 0;
+	Human** group = nullptr;	//Если файл не был найден, то группа не создана
+	n = 0; //т.к. если что то лежало то насчитает непонятно что
 
-	std::ifstream fin(filename);
-	if (fin.is_open())
+	std::ifstream fin(filename); //создаём поток
+	if (fin.is_open()) //если fin открылся тогда мы будем с ним работать
 	{
-		//1) Îïðåäåëÿåì êîëè÷åñòâî ñòðîê â ôàéëå:
-		while (!fin.eof())
+		//1) определяем количество строк в файле:
+		for (;!fin.eof();n++)
 		{
 			std::string buffer;
 			std::getline(fin, buffer);
-			if (buffer.empty())continue;
-			n++;
+			if (buffer.empty())continue;  //на случай если в файле пустые строки
+			
 		}
 
-		//2) Âûäåëÿåì ïàìÿòü ïîä îáúåêòû. Êàæäûé îáúåêò çàíèìàåò îòäåëüíóþ ñòðîêó â ôàéëå.
-		group = new Human * [n] {};
+		//2) Выделяем память под объекты. Каждый объект занимает отдельную строку в файле.
 
-		//3) Âîçâðàùàåìñÿ â íà÷àëî ôàéëà, äëÿ òîãî ÷òîáû ïðî÷èòàòü åãî åùå ðàç:
-		cout << "Ïîçèöèÿ êóðñîðà â ôàéëå: " << fin.tellg() << endl;
-		fin.clear();
-		fin.seekg(0);	//seekg() çàäàåò get-ïîçèöèþ êóðñîðà (get - âçÿòü, ïðî÷èòàòü)
-		cout << "Ïîçèöèÿ êóðñîðà â ôàéëå: " << fin.tellg() << endl;
+		group = new Human*[n] {};
 
-		//4) Âûïîëíÿåì ïîâòîðíîå ÷òåíèå:
-		std::string obj_type;
+		//для того чтобы загрузит в память объекты:
+		//3) Возвращаемся в начало файла для того чтобы прочитать его ещё раз:
+		cout << "Позиция курсора в файле: " << fin.tellg() << endl;
+		fin.clear(); //очищаем поток
+		fin.seekg(0);	//seekg() метод задаёт get-позицию курсора (get - взять, прочитать)
+		//если бы мы хотели записать файл то задавали бы put позицию 
+		cout << "Позиция курсора в файле: " << fin.tellg() << endl;
+
+		//4) Выполняем повторное чтение:
+		std::string obj_type; //для того чтобы объект постоянно не создавался создадим его один раз перед for
 		for (int i = 0; i < n; i++)
-		{
-			std::getline(fin, obj_type, ':');
-			fin.ignore();
-			if (obj_type.empty())continue;
-			group[i] = HumanFactory(obj_type);
+		{//при помощи функции Factori obj_type нам создаёт объект
+			std::getline(fin, obj_type, ':');//читаем getline-ом тип объекта до разделителя,
+			// сам разделитель не читается, чтение на нём останавливается, он прочитается при следующем чтении
+			fin.ignore();//но нам не нужно читеть разделитель при следующем чтении, поэтому мы его проигнорим fin.ignore
+			// игнорит один символ
+			//перед save напишем вспомогательную функцию
+			if (obj_type.empty())continue; //если буфер пустой тогда continue позволяет сразу перейти в конец тела
+			//цикла, пропуская весь код, который находится под ним
+			group[i] = HumanFactory(obj_type);//если не пустой даём фабрике тип объекта она нам возвращает
 			fin >> *group[i];
 		}
 
 		fin.close();
 	}
-	else
+	else  //если fin не открылся то ошибка
 	{
 		std::cerr << "Error: file not found" << endl;
 	}
 
-	return group;
+	return group; //возвращаем группу
 }
 
 //#define INHERITANCE_CHECK
