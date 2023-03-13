@@ -439,7 +439,7 @@ void main()
 	graduate.info();
 #endif //INHERITANCE_CHECK
 
-#ifdef POLYMORPHISM
+#ifdef POLIMORFISM
 	//-----------Generalisation (UpCast)---
 	Human* group[] =
 	{
@@ -471,7 +471,7 @@ void main()
 	{
 		delete group[i]; //если delete[] group[i] то удаляется весь массив, а так удаляется элементы 
 	}
-#endif // POLYMORPHISM
+#endif // POLIMORFISM
 
 #ifdef READ_FROM_FILE
 	int n = 0;	//Ðàçìåð ãðóïïû. Áóäåò âû÷èñëåí ôóíêöèåé load()
