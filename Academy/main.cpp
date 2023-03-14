@@ -68,13 +68,11 @@ public:
 	}
 	virtual std::ofstream& print(std::ofstream& ofs)const
 	{
-		ofs.width(allignment::last_name_width);
-		//ширина столбца под в последующем выводимые символы сначала 
-		//было ofs.width(20)- количество закладываемых под фамилию символов
-		//в последующем использовали перечисление enum именуем его allignment-выравнивание
-		//и оттуда вытаскиваем через :: длины элементов
+		ofs.width(allignment::last_name_width);	//ширина столбца под в последующем выводимые символы сначала 
+		//было ofs.width(20)- количество закладываемых под фамилию символов в последующем использовали перечисление
+		// enum именуем его allignment-выравнивание и оттуда вытаскиваем через :: длины элементов
 		ofs << left;//выравнивание по левому краю
-		//можно было ofs << last_name + " " + first_name;-работает так
+		//можно было ofs << last_name + " " + first_name;так тоже работает
 		ofs << last_name;
 		ofs.width(allignment::first_name_width);
 		ofs << first_name;
@@ -191,19 +189,20 @@ public:
 	std::ifstream& scan(std::ifstream& ifs)override
 	{
 		Human::scan(ifs);
-		char sz_buffer[allignment::speciality_width] = {};
-		ifs.read(sz_buffer, allignment::speciality_width - 1);	//ìåòîä read() ÷èòàåò çàäàííîå êîëè÷åñòâî Áàéò èç ôàéëà
+		char sz_buffer[allignment::speciality_width] = {};//проинициализируем нулями
+		ifs.read(sz_buffer, allignment::speciality_width - 1);	//метод read(куда,сколько) читает заданное количество байт из файла
+		
 		for (int i = allignment::speciality_width - 2; sz_buffer[i] == ' '; i--)
 			sz_buffer[i] = 0;
 		while (sz_buffer[0] == ' ')
 			for (int i = 0; sz_buffer[i]; i++)sz_buffer[i] = sz_buffer[i + 1];
-		speciality = sz_buffer;
+		speciality = sz_buffer; //записываем то что прочитали в speciality
+		//дальше просто читаем
 		ifs >> group;
 		ifs >> rating;
 		ifs >> attendance;
 		return ifs;
 	}
-
 };
 /*std::ostream& operator<<(std::ostream& os, const Student& obj)
 {
@@ -272,7 +271,7 @@ public:
 	std::ifstream& scan(std::ifstream& ifs)override
 	{
 		Human::scan(ifs);
-		char sz_buffer[allignment::speciality_width] = {};
+		char sz_buffer[allignment::speciality_width] = {};//у студента расписано подробно
 		ifs.read(sz_buffer, allignment::speciality_width - 1);
 		for (int i = allignment::speciality_width - 2; sz_buffer[i] == ' '; i--)sz_buffer[i] = 0;
 		while (sz_buffer[0] == ' ')
@@ -334,7 +333,7 @@ public:
 	std::ifstream& scan(std::ifstream& ifs)
 	{
 		Student::scan(ifs);
-		std::getline(ifs, subject);
+		std::getline(ifs, subject);//извлечение одной строки и записывание ее в переменную.
 		return ifs;
 	}
 
@@ -387,12 +386,12 @@ Human** load(const char* filename, int& n) // возвращает массив 
 	if (fin.is_open()) //если fin открылся тогда мы будем с ним работать
 	{
 		//1) определяем количество строк в файле:
-		for (;!fin.eof();n++)
+		while (!fin.eof())
 		{
 			std::string buffer;
 			std::getline(fin, buffer);
 			if (buffer.empty())continue;  //на случай если в файле пустые строки
-			
+			n++;
 		}
 
 		//2) Выделяем память под объекты. Каждый объект занимает отдельную строку в файле.
