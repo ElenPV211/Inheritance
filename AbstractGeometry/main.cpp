@@ -1,8 +1,8 @@
-#include<Windows.h>
+п»ї#include<Windows.h>
 #include<iostream>
 using namespace std;
 
-namespace Geometry //пространство имен Geometry чтобы не путало в
+namespace Geometry //РїСЂРѕСЃС‚СЂР°РЅСЃС‚РІРѕ РёРјРµРЅ Geometry С‡С‚РѕР±С‹ РЅРµ РїСѓС‚Р°Р»Рѕ РІ
 {
 class Shape
 {
@@ -12,8 +12,8 @@ public:
 	virtual void draw()const = 0;
 	virtual void info()const
 	{
-		cout << "Площадь фигуры:" << get_area() << endl;
-		cout << "Периметр фигуры:" << get_perimetr() << endl;
+		cout << "РџР»РѕС‰Р°РґСЊ С„РёРіСѓСЂС‹:" << get_area() << endl;
+		cout << "РџРµСЂРёРјРµС‚СЂ С„РёРіСѓСЂС‹:" << get_perimetr() << endl;
 		draw();
 	}
 };
@@ -62,7 +62,7 @@ public:
 	void info()const override
 	{
 		cout << typeid(*this).name() << endl;
-		cout << "Длина стороны квадрата: " << side << endl;
+		cout << "Р”Р»РёРЅР° СЃС‚РѕСЂРѕРЅС‹ РєРІР°РґСЂР°С‚Р°: " << side << endl;
 		Shape::info();
 	}
 };
@@ -129,9 +129,9 @@ void main()
 {
 	setlocale(0, "");
 	Geometry:: Square square(8);
-	/*cout << "Длина стороны квадрата: " << square.get_side() << endl;
-	cout << "Площадь квадрата: " << square.get_area() << endl;
-	cout << "Периметр квадрата: " << square.get_perimetr() << endl;
+	/*cout << "Р”Р»РёРЅР° СЃС‚РѕСЂРѕРЅС‹ РєРІР°РґСЂР°С‚Р°: " << square.get_side() << endl;
+	cout << "РџР»РѕС‰Р°РґСЊ РєРІР°РґСЂР°С‚Р°: " << square.get_area() << endl;
+	cout << "РџРµСЂРёРјРµС‚СЂ РєРІР°РґСЂР°С‚Р°: " << square.get_perimetr() << endl;
 	square.draw();*/
 
 	square.info();
