@@ -228,6 +228,27 @@ namespace Geometry //пространство имен Geometry чтобы не 
 				cout << endl;
 			}
 
+			/*BOOL WINAPI Polygon(
+				HDC hdc,             // идентификатор контекста отображения
+				const POINT FAR * lppt,// указатель на массив структур POINT
+				int cPoints);         // размер массива
+			*/
+			HWND hwnd = GetConsoleWindow();//для того чтобы рисовать нужно получить окно
+			HDC hdc = GetDC(hwnd); //для окна нужно получить контекст устройства
+			HPEN hPen = CreatePen(PS_SOLID, 5, RGB(205, 92, 92));//карандаш рисует контур фигуры
+			//(стиль, ширина, цвет(код цвета)
+			HBRUSH hBrush = CreateSolidBrush(RGB(205, 92, 92));//кисть
+
+			SelectObject(hdc, hPen); //выбираем карандаш
+			SelectObject(hdc, hBrush);//выбираем кисть
+
+			//::Polygon(hdc, Points[] = { 50, 150, 150, 50, 250, 150 },6);
+
+			DeleteObject(hBrush);
+			DeleteObject(hPen);
+
+			ReleaseDC(hwnd, hdc);
+
 		}
 		void info()const override
 		{
