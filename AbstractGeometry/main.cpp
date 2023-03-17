@@ -1,13 +1,85 @@
-﻿#include<Windows.h>
+﻿#define _USE_MATH_DEFINES
+#include<Windows.h>
 #include<iostream>
 #include<math.h>
 using namespace std;
 
 namespace Geometry //пространство имен Geometry чтобы не путало в
 {
+	enum limits
+	{
+		MIN_SIZE = 50,
+		MAX_SIZE = 500,
+		MIN_LINE_WIDTH = 1,
+		MAX_LINE_WIDTH = 30,
+		MIN_START_X = 100,
+		MAX_START_X = 1000,
+		MIN_START_Y = 100,
+		MAX_START_Y = 700
+	}; 
+	enum Color
+	{
+		//0x - 
+		red = 0x000000FF,
+		green = 0x0000FF00,
+		blue = 0x00FF0000,
+		yellow = 0x00FFFF,
+		white = 0x00FFFFFF
+	};
+#define SHAPE_TAKE_PARAMETERS int start_x, int start_y, int line_width, Color color
+#define SHAPE_GIVE_PARAMETERS start_x,start_y,line_width, color
+
 	class Shape
 	{
+	protected:
+		int start_x;
+		int start_y;
+		int line_width;
+		Color color;
 	public:
+
+		Shape(SHAPE_TAKE_PARAMETERS):color(color)
+		{
+			set_start_x(start_x);
+			set_start_y(start_y);
+			set_line_width(line_width);
+		}
+		virtual ~Shape()
+		{		}
+		int get_start_x()const
+		{
+			return start_x;
+		}
+		int get_start_y()const
+		{
+			return start_y;
+		}
+		int get_line_width()const
+		{
+			return line_width;
+		}
+
+		void set_start_x(int start_x)
+		{
+			if (start_x < limits::MIN_START_X)start_x = limits::MIN_START_X;
+			if (start_x > limits::MAX_START_X)start_x = limits::MAX_START_X;
+			this->start_x = start_x;
+		
+		}
+		void set_start_y(int start_y)
+		{
+			if (start_y < limits::MIN_START_Y)start_y = limits::MIN_START_Y;
+			if (start_y > limits::MAX_START_Y)start_y = limits::MAX_START_Y;
+			this->start_y = start_y;
+
+		}
+		void set_line_width(int line_width)
+		{
+			if (line_width < limits::MIN_LINE_WIDTH)line_width = limits::MIN_LINE_WIDTH;
+			if (line_width > limits::MAX_LINE_WIDTH)line_width = limits::MAX_LINE_WIDTH;
+			this->line_width = line_width;
+		}
+
 		virtual double get_area()const = 0;//как посчитать площадь геометрической фигуры
 		virtual double get_perimetr()const = 0;//периметр
 		virtual void draw()const = 0;//как нарисовать фигуру мы не знаем поэтому виртуальный метод
@@ -23,7 +95,7 @@ namespace Geometry //пространство имен Geometry чтобы не 
 	{
 		double side; //сторона
 	public:
-		Square(double side)
+		Square(double side, SHAPE_TAKE_PARAMETERS):Shape(SHAPE_GIVE_PARAMETERS)
 		{
 			set_side(side);//в конструкторе вызываем set метод который уже фильтрует данные 
 		}
@@ -73,7 +145,7 @@ namespace Geometry //пространство имен Geometry чтобы не 
 		double length;
 		double width;
 	public:
-		Rectangle(double width, double length)
+		Rectangle(double width, double length, SHAPE_TAKE_PARAMETERS):Shape(SHAPE_GIVE_PARAMETERS)
 		{
 			set_width(width);
 			set_length(length);
@@ -93,15 +165,15 @@ namespace Geometry //пространство имен Geometry чтобы не 
 		}
 		void set_length(double length)
 		{
-			if (length < 3)length = 3;
-			if (length > 20)length = 20;
+			if (length < limits::MIN_SIZE)length = limits::MIN_SIZE;
+			if (length > limits::MAX_SIZE)length = limits::MAX_SIZE;
 			this->length = length;
 		}
 		void set_width(double width)
 
 		{
-			if (width < 3)width = 3;
-			if (width > 20)width = 20;
+			if (width <  limits::MIN_SIZE)width = limits::MIN_SIZE;
+			if (width > limits::MAX_SIZE)width = limits::MAX_SIZE;
 			this->width = width;
 		}
 
@@ -125,19 +197,19 @@ namespace Geometry //пространство имен Geometry чтобы не 
 			}*/
 			HWND hwnd = GetConsoleWindow();//для того чтобы рисовать нужно получить окно
 			HDC hdc = GetDC(hwnd); //для окна нужно получить контекст устройства
-			HPEN hPen = CreatePen(PS_SOLID, 5, RGB(255, 215, 0));//карандаш рисует контур фигуры
+			HPEN hPen = CreatePen(PS_SOLID, line_width, color);//карандаш рисует контур фигуры
 			//(стиль, ширина, цвет)
-			HBRUSH hBrush = CreateSolidBrush(RGB(255, 215, 0));//кисть
+			HBRUSH hBrush = CreateSolidBrush(color);//кисть
 
 			SelectObject(hdc, hPen); //выбираем карандаш
 			SelectObject(hdc, hBrush);//выбираем кисть
 
-			::Rectangle(hdc, 50, 50, 400, 300); //обращаясь к глобальнуму пространству через :: и функция рисования прямоугольника
+			::Rectangle(hdc, start_x, start_y, start_x+width, start_y+length); //обращаясь к глобальнуму пространству через :: и функция рисования прямоугольника
 				//координаты верхнего левого угла и две координаты нижнего правого угла
 
 				DeleteObject(hBrush); //удаляем после использования
 			DeleteObject(hPen);
-
+			this;
 			ReleaseDC(hwnd, hdc);//контекст устройства занимает некоторое место, поэтому пока он не нужен его нужно освободить
 				//параметры hwnd окно, hdc - устройство
 		}
@@ -150,7 +222,7 @@ namespace Geometry //пространство имен Geometry чтобы не 
 		}
 	};
 
-	class Triangle :public Shape  //треугольник
+	/*class Triangle :public Shape  //треугольник
 	{
 		double sideA; //сторона A
 		double sideB; //сторона B
@@ -228,11 +300,11 @@ namespace Geometry //пространство имен Geometry чтобы не 
 				cout << endl;
 			}
 
-			/*BOOL WINAPI Polygon(
-				HDC hdc,             // идентификатор контекста отображения
-				const POINT FAR * lppt,// указатель на массив структур POINT
-				int cPoints);         // размер массива
-			*/
+			//*BOOL WINAPI Polygon(
+			//	HDC hdc,             // идентификатор контекста отображения
+			//	const POINT FAR * lppt,// указатель на массив структур POINT
+			//	int cPoints);         // размер массива
+			
 			HWND hwnd = GetConsoleWindow();//для того чтобы рисовать нужно получить окно
 			HDC hdc = GetDC(hwnd); //для окна нужно получить контекст устройства
 			HPEN hPen = CreatePen(PS_SOLID, 5, RGB(205, 92, 92));//карандаш рисует контур фигуры
@@ -242,7 +314,14 @@ namespace Geometry //пространство имен Geometry чтобы не 
 			SelectObject(hdc, hPen); //выбираем карандаш
 			SelectObject(hdc, hBrush);//выбираем кисть
 
-			//::Polygon(hdc, Points[] = { 50, 150, 150, 50, 250, 150 },6);
+			POINT points[] =
+			{
+				{50, 150},
+				{150, 50},
+				{250, 150}
+			};
+
+			::Polygon(hdc, points, 3);
 
 			DeleteObject(hBrush);
 			DeleteObject(hPen);
@@ -259,52 +338,51 @@ namespace Geometry //пространство имен Geometry чтобы не 
 			Shape::info();
 		}
 	};
-
+*/
 	class Circle :public Shape  //круг
 	{
-		double rad; //радиус
+		double radius; //радиус
 
 	public:
-		Circle(double rad)
+		Circle(double radius, SHAPE_TAKE_PARAMETERS):Shape(SHAPE_GIVE_PARAMETERS)
 		{
-			set_rad(rad);
+			set_radius(radius);
 		}
 		~Circle() {}
 
-		double get_rad()const
+		double get_radius()const
 		{
-			return rad;
+			return this->radius;
 		}
-		void set_rad(double rad)
+		void set_radius(double radius)
 		{
-			if (rad < 5)rad = 5;
-			if (rad > 20)rad = 20;
-			this->rad = rad;
+			if (radius < limits::MIN_SIZE)radius = limits::MIN_SIZE;
+			if (radius > limits::MAX_SIZE)radius = limits::MAX_SIZE;
+			this->radius = radius;
 		}
 		double get_area()const override
 		{
-			return 3.14 * pow(rad, 2);
+			return M_PI * pow(radius, 2);
 
 		}
 		double get_perimetr()const override
 		{
-			return 2 * rad * 3.14;
+			return 2 * radius * M_PI;
 		}
 
 		void draw()const override
 		{
-			int POINT[3] = {};
-
+			
 			HWND hwnd = GetConsoleWindow();//для того чтобы рисовать нужно получить окно
 			HDC hdc = GetDC(hwnd); //для окна нужно получить контекст устройства
-			HPEN hPen = CreatePen(PS_SOLID, 5, RGB(0, 0, 255));//карандаш рисует контур фигуры
+			HPEN hPen = CreatePen(PS_SOLID, line_width, color);//карандаш рисует контур фигуры
 			//(стиль, ширина, цвет(код цвета)
-			HBRUSH hBrush = CreateSolidBrush(RGB(0, 0, 255));//кисть
+			HBRUSH hBrush = CreateSolidBrush(color);//кисть
 
 			SelectObject(hdc, hPen); //выбираем карандаш
 			SelectObject(hdc, hBrush);//выбираем кисть
 
-			::Ellipse(hdc, 200, 200, 300, 300);
+			::Ellipse(hdc, start_x, start_y, start_x+2*radius, start_y+2*radius);
 
 			DeleteObject(hBrush);
 			DeleteObject(hPen);
@@ -315,7 +393,7 @@ namespace Geometry //пространство имен Geometry чтобы не 
 		void info()const override
 		{
 			cout << typeid(*this).name() << endl;
-			cout << "Радиус круга: " << rad << endl;
+			cout << "Радиус круга: " << radius << endl;
 			Shape::info();
 		}
 	};
@@ -326,18 +404,22 @@ void main()
 
 {
 	setlocale(0, "");
-	Geometry::Square square(8);
+	//HANDLE hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
+	//COORD coord;
+	//SetConsoleDisplayMode(hConsole, CONSOLE_FULLSCREEN_MODE, &coord);
+
+	Geometry::Square square(8, 100, 100, 5, Geometry::Color::blue);
 	square.info();
 	cout << "\n";
 
-	Geometry::Rectangle rect(5, 12);
+	Geometry::Rectangle rect(50, 60, 200,100,5, Geometry::Color::red);
 	rect.info();
 	cout << "\n";
 
-	Geometry::Triangle trian(5, 3, 6);
-	trian.info();
-	cout << "\n";
+	//Geometry::Triangle trian(5, 3, 6);
+	//trian.info();
+	//cout << "\n";
 
-	Geometry::Circle circle(10);
+	Geometry::Circle circle(30,  250,50,5, Geometry::Color::blue);
 	circle.info();
 }
