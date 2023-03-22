@@ -1,10 +1,10 @@
 ﻿#define _USE_MATH_DEFINES
 #include<Windows.h>
 #include<iostream>
-#include<math.h>
+//#include<math.h>
 using namespace std;
 
-namespace Geometry //пространство имен Geometry чтобы не путало в
+namespace Geometry //пространство имен Geometry чтобы не путало с глобальными функциями расположенными в библиотеке <Windows.h>
 {
 	enum limits
 	{
@@ -16,10 +16,10 @@ namespace Geometry //пространство имен Geometry чтобы не 
 		MAX_START_X = 1000,
 		MIN_START_Y = 100,
 		MAX_START_Y = 700
-	}; 
+	};
 	enum Color
 	{
-		//0x - 
+		//0x - Hexadecimal (шестнадцатиричная система исчисления)
 		red = 0x000000FF,
 		green = 0x0000FF00,
 		blue = 0x00FF0000,
@@ -38,14 +38,13 @@ namespace Geometry //пространство имен Geometry чтобы не 
 		Color color;
 	public:
 
-		Shape(SHAPE_TAKE_PARAMETERS):color(color)
+		Shape(SHAPE_TAKE_PARAMETERS) :color(color)
 		{
 			set_start_x(start_x);
 			set_start_y(start_y);
 			set_line_width(line_width);
 		}
-		virtual ~Shape()
-		{		}
+		virtual ~Shape() {}
 		int get_start_x()const
 		{
 			return start_x;
@@ -64,7 +63,7 @@ namespace Geometry //пространство имен Geometry чтобы не 
 			if (start_x < limits::MIN_START_X)start_x = limits::MIN_START_X;
 			if (start_x > limits::MAX_START_X)start_x = limits::MAX_START_X;
 			this->start_x = start_x;
-		
+
 		}
 		void set_start_y(int start_y)
 		{
@@ -91,69 +90,17 @@ namespace Geometry //пространство имен Geometry чтобы не 
 		}
 	};
 
-	class Square :public Shape  //квадрат
-	{
-		double side; //сторона
-	public:
-		Square(double side, SHAPE_TAKE_PARAMETERS):Shape(SHAPE_GIVE_PARAMETERS)
-		{
-			set_side(side);//в конструкторе вызываем set метод который уже фильтрует данные 
-		}
-		~Square() {}
-
-		double get_side()const
-		{
-			return side;
-		}
-		void set_side(double side)
-		{
-			//условия чтобы мы отфильтровать все ненужные значения
-			if (side < 5)side = 5;
-			if (side > 20)side = 20;
-			this->side = side;
-		}
-		double get_area()const override
-		{
-			return side * side;
-
-		}
-		double get_perimetr()const override
-		{
-			return side * 4;
-		}
-
-		void draw()const override
-		{
-			for (int i = 0; i < side; i++)
-			{
-				for (int j = 0; j < side; j++)
-				{
-					cout << "* ";
-				}
-				cout << endl;
-			}
-		}
-		void info()const override
-		{
-			cout << typeid(*this).name() << endl;
-			cout << "Длина стороны квадрата: " << side << endl;
-			Shape::info();
-		}
-	};
 	class Rectangle :public Shape
 	{
 		double length;
 		double width;
 	public:
-		Rectangle(double width, double length, SHAPE_TAKE_PARAMETERS):Shape(SHAPE_GIVE_PARAMETERS)
+		Rectangle(double width, double length, SHAPE_TAKE_PARAMETERS) :Shape(SHAPE_GIVE_PARAMETERS)
 		{
 			set_width(width);
 			set_length(length);
 		}
-		~Rectangle()
-		{
-
-		}
+		~Rectangle() {}
 
 		double get_length()const
 		{
@@ -172,7 +119,7 @@ namespace Geometry //пространство имен Geometry чтобы не 
 		void set_width(double width)
 
 		{
-			if (width <  limits::MIN_SIZE)width = limits::MIN_SIZE;
+			if (width < limits::MIN_SIZE)width = limits::MIN_SIZE;
 			if (width > limits::MAX_SIZE)width = limits::MAX_SIZE;
 			this->width = width;
 		}
@@ -187,14 +134,7 @@ namespace Geometry //пространство имен Geometry чтобы не 
 		}
 		void draw()const override
 		{
-			/*for (int i = 0; i < width; i++)
-			{
-			for (int j = 0; j < length; j++)
-			{
-			cout << "* ";
-			}
-			cout << endl;
-			}*/
+
 			HWND hwnd = GetConsoleWindow();//для того чтобы рисовать нужно получить окно
 			HDC hdc = GetDC(hwnd); //для окна нужно получить контекст устройства
 			HPEN hPen = CreatePen(PS_SOLID, line_width, color);//карандаш рисует контур фигуры
@@ -204,14 +144,14 @@ namespace Geometry //пространство имен Geometry чтобы не 
 			SelectObject(hdc, hPen); //выбираем карандаш
 			SelectObject(hdc, hBrush);//выбираем кисть
 
-			::Rectangle(hdc, start_x, start_y, start_x+width, start_y+length); //обращаясь к глобальнуму пространству через :: и функция рисования прямоугольника
-				//координаты верхнего левого угла и две координаты нижнего правого угла
+			::Rectangle(hdc, start_x, start_y, start_x + width, start_y + length); //обращаясь к глобальнуму пространству через :: и функция рисования прямоугольника
+			//координаты верхнего левого угла и две координаты нижнего правого угла
 
-				DeleteObject(hBrush); //удаляем после использования
+			DeleteObject(hBrush); //удаляем после использования
 			DeleteObject(hPen);
 			this;
 			ReleaseDC(hwnd, hdc);//контекст устройства занимает некоторое место, поэтому пока он не нужен его нужно освободить
-				//параметры hwnd окно, hdc - устройство
+			//параметры hwnd окно, hdc - устройство
 		}
 		void info()const override
 		{
@@ -222,181 +162,229 @@ namespace Geometry //пространство имен Geometry чтобы не 
 		}
 	};
 
-	/*class Triangle :public Shape  //треугольник
+
+	class Square :public Rectangle  //квадрат
 	{
-		double sideA; //сторона A
-		double sideB; //сторона B
-		double sideC; //сторона C
 
 	public:
+		Square(double side, SHAPE_TAKE_PARAMETERS) :Rectangle(side, side, SHAPE_GIVE_PARAMETERS) {}
+	};
 
 
-		Triangle(double sideA, double sideB, double sideC)
+		class Circle :public Shape  //круг
 		{
-			set_sideA(sideA);
-			set_sideB(sideB);
-			set_sideC(sideC);
-		}
-		~Triangle()
-		{}
+			double radius; //радиус
 
-		double get_sideA()const
-		{
-			return sideA;
-		}
-		double get_sideB()const
-		{
-			return sideB;
-		}
-		double get_sideC()const
-		{
-			return sideC;
-		}
-
-		void set_sideA(double sideA)
-		{
-			if (sideA < 3)sideA = 3;
-			if (sideA > 20)sideA = 20;
-			this->sideA = sideA;
-		}
-
-		void set_sideB(double sideB)
-		{
-			if (sideB < 3)sideB = 3;
-			if (sideB > 20)sideB = 20;
-			this->sideB = sideB;
-		}
-
-		void set_sideC(double sideC)
-		{
-			if (sideC < 3)sideC = 3;
-			if (sideC > 20)sideC = 20;
-			this->sideC = sideC;
-		}
-
-		double get_area()const override
-		{
-			return sqrt(get_perimetr() * (get_perimetr() - sideA) * (get_perimetr() - sideB) * (get_perimetr() - sideC));
-		}
-		double get_perimetr()const override
-		{
-			double perimetr = (sideA + sideB + sideC) / 2;
-
-			return perimetr;
-		}
-
-		void draw()const override
-		{
-			double h; //высота треугольника
-			h = 2 / sideA * (get_perimetr());
-
-			cout << "Высота треугольника: " << h << endl;
-
-			for (int i = 0; i < h; i++)
+		public:
+			Circle(double radius, SHAPE_TAKE_PARAMETERS) :Shape(SHAPE_GIVE_PARAMETERS)
 			{
-				for (int j = 1; j < h - i; j++) cout << ' ';
-				for (int j = h - i; j <= h; j++) cout << "* ";
+				set_radius(radius);
+			}
+			~Circle() {}
 
-				cout << endl;
+			double get_radius()const
+			{
+				return this->radius;
+			}
+			void set_radius(double radius)
+			{
+				if (radius < limits::MIN_SIZE)radius = limits::MIN_SIZE;
+				if (radius > limits::MAX_SIZE)radius = limits::MAX_SIZE;
+				this->radius = radius;
+			}
+			double get_area()const override
+			{
+				return M_PI * pow(radius, 2);
+
+			}
+			double get_perimetr()const override
+			{
+				return 2 * radius * M_PI;
 			}
 
-			//*BOOL WINAPI Polygon(
-			//	HDC hdc,             // идентификатор контекста отображения
-			//	const POINT FAR * lppt,// указатель на массив структур POINT
-			//	int cPoints);         // размер массива
-			
-			HWND hwnd = GetConsoleWindow();//для того чтобы рисовать нужно получить окно
-			HDC hdc = GetDC(hwnd); //для окна нужно получить контекст устройства
-			HPEN hPen = CreatePen(PS_SOLID, 5, RGB(205, 92, 92));//карандаш рисует контур фигуры
-			//(стиль, ширина, цвет(код цвета)
-			HBRUSH hBrush = CreateSolidBrush(RGB(205, 92, 92));//кисть
-
-			SelectObject(hdc, hPen); //выбираем карандаш
-			SelectObject(hdc, hBrush);//выбираем кисть
-
-			POINT points[] =
+			void draw()const override
 			{
-				{50, 150},
-				{150, 50},
-				{250, 150}
-			};
 
-			::Polygon(hdc, points, 3);
+				HWND hwnd = GetConsoleWindow();//для того чтобы рисовать нужно получить окно
+				HDC hdc = GetDC(hwnd); //для окна нужно получить контекст устройства
+				HPEN hPen = CreatePen(PS_SOLID, line_width, color);//карандаш рисует контур фигуры
+				//(стиль, ширина, цвет(код цвета)
+				HBRUSH hBrush = CreateSolidBrush(color);//кисть
 
-			DeleteObject(hBrush);
-			DeleteObject(hPen);
+				SelectObject(hdc, hPen); //выбираем карандаш
+				SelectObject(hdc, hBrush);//выбираем кисть
 
-			ReleaseDC(hwnd, hdc);
+				::Ellipse(hdc, start_x, start_y, start_x + 2 * radius, start_y + 2 * radius);
 
-		}
-		void info()const override
+				DeleteObject(hBrush);
+				DeleteObject(hPen);
+
+				ReleaseDC(hwnd, hdc);
+			}
+
+			void info()const override
+			{
+				cout << typeid(*this).name() << endl;
+				cout << "Радиус круга: " << radius << endl;
+				Shape::info();
+			}
+		};
+
+		class Triangle :public Shape
 		{
-			cout << typeid(*this).name() << endl;
-			cout << "Длины сторон треугольника: ";
-			cout << " A = " << sideA << " B = " << sideB;
-			cout << " C = " << sideC << endl;
-			Shape::info();
-		}
-	};
-*/
-	class Circle :public Shape  //круг
-	{
-		double radius; //радиус
+		public:
+			Triangle(SHAPE_TAKE_PARAMETERS) :Shape(SHAPE_GIVE_PARAMETERS) {}
+			virtual double get_height()const = 0;
+			void info()const
+			{
+				cout << "Высота треугольника: " << get_height() << endl;
+				Shape::info();
+			}
+		};
 
-	public:
-		Circle(double radius, SHAPE_TAKE_PARAMETERS):Shape(SHAPE_GIVE_PARAMETERS)
+		class EquilateralTriangle :public Triangle
 		{
-			set_radius(radius);
-		}
-		~Circle() {}
+			double side;
 
-		double get_radius()const
+		public:
+			EquilateralTriangle(double side, SHAPE_TAKE_PARAMETERS) :Triangle(SHAPE_GIVE_PARAMETERS)
+			{
+				set_side(side);
+			}
+			~EquilateralTriangle() {}
+
+			double get_side()const
+			{
+				return side;
+			}
+			void set_side(double side)
+			{
+				if (side < limits::MIN_SIZE)side = limits::MIN_SIZE;
+				if (side > limits::MAX_SIZE)side = limits::MAX_SIZE;
+				this->side = side;
+			}
+			double get_height()const
+			{
+				return sqrt(pow(side, 2) - pow(side / 2, 2));
+			}
+			double get_area()const
+			{
+				return side * get_height() / 2;
+			}
+			double get_perimetr()const
+			{
+				return side * 3;
+			}
+			void draw()const
+			{
+				HWND hwnd = GetConsoleWindow();
+				HDC hdc = GetDC(hwnd);
+				HPEN hPen = CreatePen(PS_SOLID, line_width, color);
+				HBRUSH hBrush = CreateSolidBrush(color);
+
+				SelectObject(hdc, hPen);
+				SelectObject(hdc, hBrush);
+
+				POINT vertex[] =
+				{
+					{start_x, start_y + side},
+					{start_x + side, start_y + side},
+					{start_x + side / 2, start_y + side - get_height()}
+				};
+
+				::Polygon(hdc, vertex, 3);
+
+				DeleteObject(hBrush);
+				DeleteObject(hPen);
+
+				ReleaseDC(hwnd, hdc);
+			}
+			void info()const
+			{
+				cout << typeid(*this).name() << endl;
+				cout << "Длина стороны: " << side << endl;
+				Triangle::info();
+			}
+		};
+
+		class RightTrinagle :public Triangle
 		{
-			return this->radius;
-		}
-		void set_radius(double radius)
-		{
-			if (radius < limits::MIN_SIZE)radius = limits::MIN_SIZE;
-			if (radius > limits::MAX_SIZE)radius = limits::MAX_SIZE;
-			this->radius = radius;
-		}
-		double get_area()const override
-		{
-			return M_PI * pow(radius, 2);
+			double side1, side2;
+		public:
+			RightTrinagle(double side1, double side2, SHAPE_TAKE_PARAMETERS) :Triangle(SHAPE_GIVE_PARAMETERS)
+			{
+				set_side_1(side1);
+				set_side_2(side2);
+			}
+			~RightTrinagle() {}
+			double get_side_1()const
+			{
+				return side1;
+			}
+			double get_side_2()const
+			{
+				return side2;
+			}
+			void set_side_1(double side1)
+			{
+				if (side1 < limits::MIN_SIZE) side1 = limits::MIN_SIZE;
+				if (side1 > limits::MAX_SIZE) side1 = limits::MAX_SIZE;
+				this->side1 = side1;
+			}
+			void set_side_2(double side2)
+			{
+				if (side2 < limits::MIN_SIZE) side2 = limits::MIN_SIZE;
+				if (side2 > limits::MAX_SIZE) side2 = limits::MAX_SIZE;
+				this->side2 = side2;
+			}
+			double get_height()const
+			{
+				return side2;
+			}
+			double get_hypotenuse()const
+			{
+				return sqrt(side1 * side1 + side2 * side2);
+			}
+			double get_area()const
+			{
+				return side1 * side2 / 2;
+			}
+			double get_perimeter()const
+			{
+				return side1 + side2 + get_hypotenuse();
+			}
+			void draw()const
+			{
+				HWND hwnd = GetConsoleWindow();
+				HDC hdc = GetDC(hwnd);
+				HPEN hPen = CreatePen(PS_SOLID, line_width, color);
+				HBRUSH hBrush = CreateSolidBrush(color);
 
-		}
-		double get_perimetr()const override
-		{
-			return 2 * radius * M_PI;
-		}
+				SelectObject(hdc, hPen);
+				SelectObject(hdc, hBrush);
 
-		void draw()const override
-		{
-			
-			HWND hwnd = GetConsoleWindow();//для того чтобы рисовать нужно получить окно
-			HDC hdc = GetDC(hwnd); //для окна нужно получить контекст устройства
-			HPEN hPen = CreatePen(PS_SOLID, line_width, color);//карандаш рисует контур фигуры
-			//(стиль, ширина, цвет(код цвета)
-			HBRUSH hBrush = CreateSolidBrush(color);//кисть
+				POINT vertex[] =
+				{
+					{start_x, start_y},
+					{start_x, start_y + get_height()},
+					{start_x + side1, start_y + get_height()},
+				};
+				::Polygon(hdc, vertex, 3);
 
-			SelectObject(hdc, hPen); //выбираем карандаш
-			SelectObject(hdc, hBrush);//выбираем кисть
+				DeleteObject(hBrush);
+				DeleteObject(hPen);
 
-			::Ellipse(hdc, start_x, start_y, start_x+2*radius, start_y+2*radius);
-
-			DeleteObject(hBrush);
-			DeleteObject(hPen);
-
-			ReleaseDC(hwnd, hdc);
-		}
-
-		void info()const override
-		{
-			cout << typeid(*this).name() << endl;
-			cout << "Радиус круга: " << radius << endl;
-			Shape::info();
-		}
-	};
+				ReleaseDC(hwnd, hdc);
+			}
+			void info()const
+			{
+				cout << typeid(*this).name() << endl;
+				cout << "Сторона 1:	 " << side1 << endl;
+				cout << "Сторона 2:	 " << side2 << endl;
+				cout << "Гипотенуза: " << get_hypotenuse() << endl;
+				Triangle::info();
+			}
+		};
 }
 
 
@@ -422,4 +410,9 @@ void main()
 
 	Geometry::Circle circle(30,  250,50,5, Geometry::Color::blue);
 	circle.info();
+
+	Geometry::EquilateralTriangle eq_triangle(250, 700, 50, 10, Geometry::Color::green);
+	eq_triangle.info();
+	
+
 }
